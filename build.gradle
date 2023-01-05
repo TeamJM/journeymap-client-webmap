@@ -1,0 +1,116 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+    }
+
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+    }
+}
+
+configurations.all {
+    // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'kotlin'
+
+
+    sourceSets {
+        main.kotlin.srcDirs = ['src/main/java', 'src/main/kotlin']
+    }
+    sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.withSourcesJar()
+
+    jar {
+        dependsOn 'processDocs'
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        manifest {
+            attributes([
+                    "Specification-Title"     : project.name,
+                    "Specification-Vendor"    : project.group_id,
+                    "Specification-Version"   : "1", // We are version 1 of ourselves
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : "${version}",
+                    "Implementation-Vendor"   : project.group_id,
+                    "Implementation-URL"      : "http://journeymap.info",
+                    "Implementation-Timestamp": getDate()
+            ])
+        }
+    }
+
+    repositories {
+
+        mavenCentral()
+
+        maven {
+            name = 'Sponge / Mixin'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
+        maven {
+            name = "JourneyMap (Public)"
+            url = "https://jm.gserv.me/repository/maven-public/"
+        }
+        maven {
+            url "https://www.cursemaven.com"
+        }
+
+        maven {
+            name = 'BlameJared Maven (CrT / Bookshelf)'
+            url = 'https://maven.blamejared.com'
+        }
+        // used for local mods in the libs folder
+        flatDir {
+            dirs '../libs'
+        }
+    }
+
+    dependencies {
+        implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
+        implementation "ignored:journeymap:1.19.3-5.9.0-forge"
+        // for annotations
+        implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+        // external libs
+        implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+        implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
+        implementation group: 'io.javalin', name: 'javalin', version: '5.3.0'
+    }
+
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
+    }
+
+    compileKotlin {
+        source(project(":Common").sourceSets.main.allSource)
+        inputs.file "../gradle.properties"
+        kotlinOptions {
+            jvmTarget = "17"
+            freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        }
+    }
+
+    // Disables Gradle's custom module metadata from being published to maven. The
+    // metadata includes mapped dependencies which are not reasonably consumable by
+    // other mod developers.
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+}
+
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format(project.dateFormat)
+    return formattedDate
+}

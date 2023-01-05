@@ -1,0 +1,314 @@
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net"
+        }
+        maven {
+            url = 'https://maven.parchmentmc.org'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'gradle.plugin.com.github.johnrengelman:shadow:7.1.2'
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+        classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7.+'
+        classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: "com.modrinth.minotaur"
+
+version = "${project.mod_version}+${project.minecraft_version}"
+def modVersion = "${project.mod_version}"
+
+group = project.group_id
+archivesBaseName = project.mod_id
+
+configurations {
+    library
+    implementation.extendsFrom library
+    shade.extendsFrom library
+}
+
+configurations.all {
+    // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+//    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-inline:4.1.+'
+
+//    shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
+
+    //external libs shade
+    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
+    shade group: 'io.javalin', name: 'javalin', version: '5.3.0'
+    shade group: 'io.github.earcut4j', name: 'earcut4j', version: '2.2.2'
+    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
+
+    compileOnly project(":Common")
+}
+
+mixin {
+    add sourceSets.main, "journeymap-refmap.json"
+}
+
+minecraft {
+    mappings channel: project.mappings_channel, version: "${project.parchment_mappings}-${project.minecraft_version}"
+    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
+    runs {
+        client = {
+            arg "--mixin=journeymap.mixins.json"
+            // needed for deps with mixins.
+//            properties 'mixin.env.disableRefMap': 'true'
+            property 'mixin.debug.export', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            properties 'forge.logging.console.level': 'info'
+            properties 'journeymap.map_testing': 'true'
+
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            workingDirectory project.file('run/forge/client')
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+        server = {
+            arg 'nogui'
+            arg "--mixin=journeymap.mixins.json"
+
+            property 'mixin.debug.export', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            properties 'forge.logging.console.level': 'info'
+            properties 'mixin.env.disableRefMap': 'true'
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            workingDirectory project.file('run/forge/server')
+            mods {
+                modServerRun   {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+        data {
+//            args '--mixin.config', 'journeymap.mixins.json'
+
+            workingDirectory project.file('game_test')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'journeymap', '--all', '--output', file('src/generated/resources/')
+            mods {
+                modDataRun   {
+                    source sourceSets.main
+                    source project(":Common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+minecraft.runs.all {
+    lazyToken('minecraft_classpath') {
+        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+    }
+}
+
+reobf {
+    shadowJar {
+
+    }
+}
+
+shadowJar {
+    archiveName = "${baseName}-${version}-forge.${extension}"
+    configurations = [project.configurations.shade]
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    dependencies {
+        exclude("META-INF/maven/**")
+        exclude("META-INF/services/org.*")
+        exclude("META-INF/services/jakarta.*")
+        exclude(dependency("org.ow2.asm:.*:.*"))
+    }
+    minimize {
+        // API has utility classes that must be included
+        exclude(dependency("info.journeymap:.*:.*"))
+        exclude(dependency("org.slf4j:.*:.*"))
+    }
+
+    relocate "jakarta", "info.journeymap.shaded.jakarta"
+    relocate "javax.servlet", "info.journeymap.shaded.org.javax.servlet"
+    relocate "org.intellij", "info.journeymap.shaded.org.intellij"
+    relocate "org.jetbrains", "info.journeymap.shaded.org.jetbrains"
+    relocate "org.slf4j", "info.journeymap.shaded.org.slf4j"
+    relocate "org.eclipse", "info.journeymap.shaded.org.eclipse"
+
+    relocate "kotlin", "info.journeymap.shaded.kotlin.kotlin"
+    relocate "io.javalin", "info.journeymap.shaded.io.javalin"
+
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+}
+
+tasks.withType(JavaCompile) {
+    source(project(":Common").sourceSets.main.allSource)
+    options.encoding = "UTF-8"
+}
+
+jar.finalizedBy('reobfJar')
+
+// This block of code expands all the gradle properties in the specified resource targets.
+// It copies them into the targets and expands all the defined properties.
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', 'license.txt']
+def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+def replaceProperties = [
+        version     : project.version,
+        modVersion  : modVersion,
+        mcversion   : project.minecraft_version,
+        date        : getDate()
+]
+
+processResources() {
+    from project(":Common").sourceSets.main.resources
+    //    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    // this will ensure that this task is redone when the versions change.
+    inputs.properties replaceProperties
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+
+    intoTargets.each { target ->
+        if (file(target).exists()) {
+            copy {
+                from(sourceSets.main.resources) {
+                    include resourceTargets
+                    expand replaceProperties
+                }
+                into target
+            }
+        }
+    }
+}
+
+task processDocs(type: Copy) {
+    // update docs
+    from(file("/doc/")) {
+        include '*.html'
+        expand 'version': project.version,
+                'date': getDate(),
+                'mcversion': project.minecraft_version,
+                'loaderversion': project.forge_version,
+                'loadername': "Forge"
+    }
+    into 'build/doc'
+}
+
+tasks.build.dependsOn reobfShadowJar
+
+clean.doFirst {
+    // Remove the Webpack bundled assets as part of the clean task
+    delete "$projectDir/src/main/resources/assets/journeymap/web/"
+}
+
+jar {
+    classifier = 'slim'
+    dependsOn 'processDocs'
+    manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : project.group_id,
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : project.group_id,
+                "Implementation-URL"      : "http://journeymap.info",
+                "Implementation-Timestamp": getDate(),
+                "FMLAT"                   : "accesstransformer.cfg",
+        ])
+    }
+}
+
+
+artifacts {
+    archives shadowJar
+}
+
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format(project.dateFormat)
+    return formattedDate
+}
+
+// Automated upload to CurseForge for the win!
+if (!project.hasProperty("curseForgeApiKey")) {
+    ext.curseForgeApiKey = "notset"
+}
+
+curseforge {
+    project {
+        id = '32274'
+        apiKey = "${curseForgeApiKey}"
+        changelogType = 'html'
+        releaseType = release_type
+        addGameVersion project.minecraft_version
+        relations {
+            tool 'journeymap-tools'
+        }
+
+        mainArtifact(shadowJar) {
+            displayName = "${archivesBaseName}-${version}-forge"
+            changelog = file('/build/doc/changelog.html')
+        }
+    }
+}
+
+
+tasks.modrinth.dependsOn(tasks.build)
+
+modrinth {
+    token = "${modrinthApiKey}"
+    projectId = "lfHFW1mp"
+    versionNumber = "${version}-forge"
+    versionName = "${archivesBaseName}-${version}-forge"
+    versionType = release_type
+    uploadFile = shadowJar
+    gameVersions = ["${project.minecraft_version}"]
+    loaders = ["forge"]
+    changelog = file('/build/doc/changelog.html').exists() ? file('/build/doc/changelog.html').text : null
+}
+
+// Ensure build is done prior to cursegradle tasks
+project.afterEvaluate {
+    project.tasks.findAll { task ->
+        (task.name.startsWith('curseforge') || task.name.startsWith('modrinth'))
+                && (task.name != 'curseforge' || task.name != 'modrinth')
+    }.each { projectTask ->
+        projectTask.dependsOn build
+    }
+}

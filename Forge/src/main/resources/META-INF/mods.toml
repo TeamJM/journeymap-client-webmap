@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[44,)" #
+issueTrackerURL="https://github.com/TeamJM/journeymap/issues"
+license="All rights reserved"
+
+[[mods]]
+modId="journeymap_client_webmap"
+version="${modVersion}"
+displayName="JourneyMap Client WebMap"
+updateJSONURL="https://forge.curseupdate.com/32274/journeymap"
+displayURL="http://journeymap.info"
+logoFile="journeymap.png"
+credits="Techbrew, Mysticdrew, gdude"
+authors="Techbrew, Mysticdrew"
+
+description='''
+Client WebMap for Journeymap. Built: ${date}.
+'''
+
+[[dependencies.journeymap_client_webmap]]
+modId="forge"
+mandatory=true
+versionRange="[44.0.0,)"
+
+[[dependencies.journeymap_client_webmap]]
+modId="journeymap"
+mandatory=true
+versionRange="[5.10.0,)"

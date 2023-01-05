@@ -1,0 +1,71 @@
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net"
+        }
+        maven {
+            url = 'https://maven.parchmentmc.org'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+
+    dependencies {
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+        classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7.+'
+        classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+}
+
+
+version = "${project.mod_version}+${project.minecraft_version}"
+def modVersion = "${project.mod_version}"
+
+group = project.group_id
+archivesBaseName = project.mod_id
+
+configurations {
+    shade
+}
+
+minecraft {
+    version(minecraft_version)
+    accessWideners(project.file("src/main/resources/journeymap_client_webmap.accesswidener"))
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+
+    // for annotations
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+
+
+}
+
+task processDocs(type: Copy) {
+    // update docs
+    from(file("/doc/")) {
+        include '*.html'
+        expand 'version': project.version,
+                'date': getDate(),
+                'mcversion': project.minecraft_version,
+                'loaderversion': project.forge_version,
+                'loadername': "Forge"
+    }
+    into 'build/doc'
+}
