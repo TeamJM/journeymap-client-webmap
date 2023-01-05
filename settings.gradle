@@ -16,5 +16,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'JourneyMap Client WebMap'
+rootProject.name = 'journeymap_client_webmap'
 include("Common", "Fabric", "Forge")
