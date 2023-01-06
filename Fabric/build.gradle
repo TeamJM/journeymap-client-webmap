@@ -20,6 +20,7 @@ plugins {
 }
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "com.modrinth.minotaur"
+apply plugin: "maven-publish"
 
 repositories {
     maven {
