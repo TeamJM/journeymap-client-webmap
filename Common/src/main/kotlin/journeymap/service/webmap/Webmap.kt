@@ -53,7 +53,7 @@ object Webmap {
                         if (!dir.exists()) {
                             logger.info("1Attempting to copy web content to {}", File(Constants.JOURNEYMAP_DIR, "web"))
                             val created =
-                                FileHandler.copyResources(dir, ResourceLocation(Journeymap.MOD_ID, "web"), "", false)
+                                FileHandler.copyResources(dir, ResourceLocation(journeymap.Constants.MOD_ID, "web"), "", false)
                             logger.info("Web content copied successfully: {}", created)
                         }
 
