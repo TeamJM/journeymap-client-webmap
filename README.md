@@ -72,9 +72,8 @@ disable the Erlang plugin:
 * The end result will be in `build/libs/journeymap_client-webmap*.jar`
 
 #### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
-[Javalin][8]
-
-[LICENSE][9] [Apache License Version 2.0][10]
+[Javalin][8]:
+[LICENSE][9] - [Apache License Version 2.0][10]
 
 [1]: https://github.com:TeamJM/journeymap-client-webmap
 
