@@ -325,8 +325,8 @@ publishing {
             url = uri("https://jm.gserv.me/repository/maven-snapshots/")
 
             credentials {
-                username = project.findProperty("journeymap.user") ?: System.getenv("JOURNEYMAP_USER")
-                password = project.findProperty("journeymap.password") ?: System.getenv("JOURNEYMAP_PASSWORD")
+                username = project.findProperty("journeymap.user") ?: System.getenv("JOURNEYMAP_WEB_USER")
+                password = project.findProperty("journeymap.password") ?: System.getenv("JOURNEYMAP_WEB_PASSWORD")
             }
 
             version = project.version
