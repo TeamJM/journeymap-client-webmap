@@ -15,8 +15,9 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          version: 17
+          java-version: 17
           distribution: temurin
+          cache: gradle
 
       - name: Gradle Build
         run: /bin/sh ./gradlew build
