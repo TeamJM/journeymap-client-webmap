@@ -73,7 +73,8 @@ disable the Erlang plugin:
 
 #### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
 [Javalin][8]
-[license][9] [Apache License Version 2.0][10]
+
+[LICENSE][9] [Apache License Version 2.0][10]
 
 [1]: https://github.com:TeamJM/journeymap-client-webmap
 
