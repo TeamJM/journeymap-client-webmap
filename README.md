@@ -4,6 +4,7 @@ Source code and build resources for [JourneyMap Client WebMap][2] ([http://journ
 
 ### Downloads
 [CurseForge][6]
+
 [Modrinth][7]
 
 ### Support
@@ -70,7 +71,7 @@ disable the Erlang plugin:
 * Build using Gradle panel > journeymap-client-webmap > Tasks > build > build
 * The end result will be in `build/libs/journeymap_client-webmap*.jar`
 
-### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
+#### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
 [Javalin][8]
 [license][9] [Apache License Version 2.0][10]
 
