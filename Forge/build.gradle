@@ -322,7 +322,7 @@ publishing {
     repositories {
         maven {
             name = "JourneyMap"
-            url = uri("https://jm.gserv.me/repository/maven-snapshots/")
+            url = uri("https://jm.gserv.me/repository/maven/")
 
             credentials {
                 username = project.findProperty("journeymap.user") ?: System.getenv("JOURNEYMAP_WEB_USER")
