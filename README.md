@@ -1,6 +1,6 @@
-# [JourneyMap Client WebMap for Minecraft][1]
+# [JourneyMap WebMap for Minecraft][1]
 
-Source code and build resources for [JourneyMap Client WebMap][2] ([http://journeymap.info][2])
+Source code and build resources for [JourneyMap WebMap][2] ([http://journeymap.info][2])
 
 ### Downloads
 [CurseForge][6]
@@ -27,20 +27,20 @@ The project [WebMap Client][4] contains the javascript resources used by this pr
 
 ## Environment Setup
 
-### 1. Git the JourneyMap Client WebMap source
+### 1. Git the JourneyMap WebMap source
 
-Check out a branch of the JourneyMap Client WebMap GIT repo to a directory called journeymap-client-webmap.  For example:
+Check out a branch of the JourneyMap WebMap GIT repo to a directory called journeymap-webmap.  For example:
 
 ```sh
-    git clone git@github.com:TeamJM/journeymap-client-webmap.git   
+    git clone git@github.com:TeamJM/journeymap-webmap.git   
     cd journeymap-webmap-client
     git fetch && git checkout (branchname)
 ```
 
-### 2. Setup JourneyMap Client WebMap with MultiLoader Template for IntelliJ IDEA
+### 2. Setup JourneyMap WebMap with MultiLoader Template for IntelliJ IDEA
 
 ## IntelliJ IDEA
-#### JourneyMap Client WebMap uses the [MultiLoader Template][3] for combining sources of Fabric and Forge.
+#### JourneyMap WebMap uses the [MultiLoader Template][3] for combining sources of Fabric and Forge.
 
 
 1. If your default JVM/JDK is not Java 17 you will encounter an error when opening the project. This error is fixed by going to `File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM`and changing the value to a valid Java 17 JVM. You will also need to set the Project SDK to Java 17. This can be done by going to `File > Project Structure > Project SDK`. Once both have been set open the Gradle tab in IDEA and click the refresh button to reload the project.
@@ -55,7 +55,7 @@ Check out a branch of the JourneyMap Client WebMap GIT repo to a directory calle
 To enable HotSwap:
 
 1. Go to File > Settings... > Build, Execution, Deployment > Build Tools > Gradle
-2. For the journeymap-client-webmap project, change "Build and run using" to "IntelliJ IDEA"
+2. For the journeymap-webmap project, change "Build and run using" to "IntelliJ IDEA"
 
 If builds begin failing with the error "java.lang.UnsupportedClassVersionError:
 org/intellij/erlang/jps/model/JpsErlangModelSerializerExtension", you'll need to use a newer project JDK or simply
@@ -68,14 +68,14 @@ disable the Erlang plugin:
 ### 3. Build the jars
 
 * Update `project.properties` version info
-* Build using Gradle panel > journeymap-client-webmap > Tasks > build > build
-* The end result will be in `build/libs/journeymap_client-webmap*.jar`
+* Build using Gradle panel > journeymap-webmap > Tasks > build > build
+* The end result will be in `build/libs/journeymap-webmap*.jar`
 
-#### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
+#### JourneyMap WebMap includes and/or makes use of the following software under their respective licenses:
 [Javalin][8]:
 [LICENSE][9] - [Apache License Version 2.0][10]
 
-[1]: https://github.com:TeamJM/journeymap-client-webmap
+[1]: https://github.com:TeamJM/journeymap-webmap
 
 [2]: http://journeymap.info
 
@@ -85,9 +85,9 @@ disable the Erlang plugin:
 
 [5]: https://discord.com/invite/eP8gE69
 
-[6]: https://www.curseforge.com/minecraft/mc-mods/journeymap-client-web-map
+[6]: https://www.curseforge.com/minecraft/mc-mods/journeymap-web-map
 
-[7]: https://modrinth.com/mod/journeymap-client-web-map
+[7]: https://modrinth.com/mod/journeymap-web-map
 
 [8]: https://github.com/javalin/javalin
 

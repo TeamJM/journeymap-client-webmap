@@ -43,7 +43,7 @@ configurations {
 
 minecraft {
     version(minecraft_version)
-    accessWideners(project.file("src/main/resources/journeymap_client_webmap.accesswidener"))
+    accessWideners(project.file("src/main/resources/journeymap_webmap.accesswidener"))
 }
 
 dependencies {

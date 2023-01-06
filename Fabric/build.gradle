@@ -76,7 +76,7 @@ configurations.all {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/journeymap_client_webmap.accesswidener")
+    accessWidenerPath = file("src/main/resources/journeymap_webmap.accesswidener")
 }
 
 dependencies {
@@ -109,7 +109,7 @@ tasks.withType(JavaCompile) {
 }
 
 loom {
-    accessWidenerPath.set(project(":Common").file("src/main/resources/journeymap_client_webmap.accesswidener"))
+    accessWidenerPath.set(project(":Common").file("src/main/resources/journeymap_webmap.accesswidener"))
     runs {
         client {
             client()

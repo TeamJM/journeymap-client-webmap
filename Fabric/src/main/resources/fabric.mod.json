@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "journeymap_client_webmap",
+  "id": "journeymap_webmap",
   "version": "${version}",
 
-  "name": "JourneyMap Client WebMap",
+  "name": "JourneyMap WebMap",
   "description": "Client WebMap for Journeymap",
   "authors": [
     "Mysticdrew",
