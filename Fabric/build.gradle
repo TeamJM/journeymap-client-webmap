@@ -331,6 +331,7 @@ publishing {
 
     publications {
         maven(MavenPublication) {
+            artifactId = "${archivesBaseName}-${version}-fabric"
             from components.java
         }
     }

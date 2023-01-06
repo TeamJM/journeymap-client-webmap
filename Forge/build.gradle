@@ -335,6 +335,7 @@ publishing {
 
     publications {
         maven(MavenPublication) {
+            artifactId = "${archivesBaseName}-${version}-forge"
             from components.java
         }
     }
