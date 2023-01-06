@@ -318,21 +318,23 @@ publishing {
     repositories {
         maven {
             name = "JourneyMap"
-            url = uri("https://jm.gserv.me/repository/maven/")
+            url = uri("https://jm.gserv.me/repository/maven-releases/")
 
             credentials {
                 username = project.findProperty("journeymap.user") ?: System.getenv("JOURNEYMAP_WEB_USER")
                 password = project.findProperty("journeymap.password") ?: System.getenv("JOURNEYMAP_WEB_PASSWORD")
             }
-
-            version = project.version
         }
     }
 
     publications {
-        maven(MavenPublication) {
-            artifactId = "${archivesBaseName}-${version}-fabric"
-            from components.java
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version "${project.version}-fabric"
+            artifact shadowJar {
+                classifier = ""
+            }
         }
     }
 }
