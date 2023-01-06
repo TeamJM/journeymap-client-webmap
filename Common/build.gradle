@@ -35,7 +35,7 @@ version = "${project.mod_version}+${project.minecraft_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.mod_id
+archivesBaseName = project.base_name
 
 configurations {
     shade
@@ -53,8 +53,6 @@ dependencies {
 
     // for annotations
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-
-
 }
 
 task processDocs(type: Copy) {

@@ -61,12 +61,11 @@ ext {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-version = "${project.mod_version}+${project.minecraft_version}"
+version = "${project.mod_version}+${project.minecraft_version}-fabric"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.mod_id
-
+archivesBaseName = project.base_name
 configurations {
     shade
 }
@@ -92,7 +91,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 //    modImplementation "curse.maven:journeymap-32274:${project.jourenymap_fabric_version}"
-    implementation project(":Common")
+    compileOnly project(":Common")
 
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
@@ -131,13 +130,12 @@ loom {
 remapJar {
     inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier "fabric"
+//    classifier "fabric"
 }
 
 shadowJar {
-    archiveName = "${baseName}-${version}.${extension}"
+    archiveName = "${baseName}-${version}-slim.${extension}".replace("-fabric", "")
     configurations = [project.configurations.shade]
-    classifier = "shadow"
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     dependencies {
         exclude("META-INF/maven/**")
@@ -278,7 +276,7 @@ curseforge {
         }
 
         mainArtifact(remapJar) {
-            displayName = "${archivesBaseName}-${version}-fabric"
+            displayName = "${archivesBaseName}-${version}"
             changelog = file('/build/doc/changelog.html')
         }
         afterEvaluate {
@@ -292,8 +290,8 @@ tasks.modrinth.dependsOn(tasks.build)
 modrinth {
     token = "${modrinthApiKey}"
     projectId = "YaZ1fUTg"
-    versionNumber = "${version}-fabric"
-    versionName = "${archivesBaseName}-${version}-fabric"
+    versionNumber = "${version}"
+    versionName = "${archivesBaseName}-${version}"
     versionType = release_type
     uploadFile = remapJar
     gameVersions = ["${project.minecraft_version}"]
@@ -314,6 +312,10 @@ project.afterEvaluate {
     }
 }
 
+tasks.withType(PublishToMavenRepository) { task ->
+    task.dependsOn remapJar
+}
+
 publishing {
     repositories {
         maven {
@@ -331,10 +333,8 @@ publishing {
         mavenJava(MavenPublication) {
             groupId project.group
             artifactId project.archivesBaseName
-            version "${project.version}-fabric"
-            artifact shadowJar {
-                classifier = ""
-            }
+            version "${project.version}"
+            artifact remapJar
         }
     }
 }

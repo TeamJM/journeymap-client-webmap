@@ -40,7 +40,7 @@ version = "${project.mod_version}+${project.minecraft_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.mod_id
+archivesBaseName = project.base_name
 
 configurations {
     shade
@@ -317,7 +317,10 @@ project.afterEvaluate {
         projectTask.dependsOn build
     }
 }
-publish.dependsOn('reobfShadowJar')
+tasks.withType(PublishToMavenRepository) { task ->
+    task.dependsOn reobfShadowJar
+}
+
 publishing {
     repositories {
         maven {
