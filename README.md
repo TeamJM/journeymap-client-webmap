@@ -81,7 +81,7 @@ disable the Erlang plugin:
 
 [3]: https://github.com/jaredlll08/MultiLoader-Template
 
-[4]: https://github.com:TeamJM/webmap-client
+[4]: https://github.com/TeamJM/webmap-client
 
 [5]: https://discord.com/invite/eP8gE69
 
