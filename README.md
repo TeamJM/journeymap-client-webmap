@@ -1,3 +1,4 @@
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/eP8gE69)
 # [JourneyMap WebMap for Minecraft][1]
 
 Source code and build resources for [JourneyMap WebMap][2] ([http://journeymap.info][2])

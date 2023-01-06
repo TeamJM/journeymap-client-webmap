@@ -331,3 +331,4 @@ publishing {
             from components.java
         }
     }
+}
