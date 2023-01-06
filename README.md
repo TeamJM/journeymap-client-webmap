@@ -4,8 +4,13 @@ Source code and build resources for [JourneyMap Client WebMap][2] ([http://journ
 
 ## Details
 JourenyMap Client WebMap is an addon mod for JourneyMap that allows you to view your map in a local web browser. 
+Main uses are displaying your map on another monitor, on a tablet, or any device on your local network. 
 
-What it is not, it is not a server sided map. It will do nothing if added to the server. 
+### What it is Not! 
+It is not a server sided map. It will do nothing when added to the server. 
+
+### Web Content
+The project [WebMap Client][4] contains the javascript resources used by this project. 
 
 ## Requirements
 
@@ -63,3 +68,5 @@ disable the Erlang plugin:
 [2]: http://journeymap.info
 
 [3]: https://github.com/jaredlll08/MultiLoader-Template
+
+[4]: https://github.com:TeamJM/webmap-client

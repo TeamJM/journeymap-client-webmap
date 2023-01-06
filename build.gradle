@@ -76,7 +76,7 @@ subprojects {
 
     dependencies {
         implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
-        implementation "ignored:journeymap:1.19.3-5.9.0-forge"
+        implementation "ignored:journeymap:1.19.3-5.10.0-forge"
         // for annotations
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
