@@ -2,6 +2,13 @@
 
 Source code and build resources for [JourneyMap Client WebMap][2] ([http://journeymap.info][2])
 
+### Downloads
+[CurseForge][6]
+[Modrinth][7]
+
+### Support
+[Discord][5]
+
 ## Details
 JourenyMap Client WebMap is an addon mod for JourneyMap that allows you to view your map in a local web browser. 
 Main uses are displaying your map on another monitor, on a tablet, or any device on your local network. 
@@ -63,6 +70,10 @@ disable the Erlang plugin:
 * Build using Gradle panel > journeymap-client-webmap > Tasks > build > build
 * The end result will be in `build/libs/journeymap_client-webmap*.jar`
 
+### JourneyMap Client WebMap includes and/or makes use of the following software under their respective licenses:
+[Javalin][8]
+[license][9] [Apache License Version 2.0][10]
+
 [1]: https://github.com:TeamJM/journeymap-client-webmap
 
 [2]: http://journeymap.info
@@ -70,3 +81,15 @@ disable the Erlang plugin:
 [3]: https://github.com/jaredlll08/MultiLoader-Template
 
 [4]: https://github.com:TeamJM/webmap-client
+
+[5]: https://discord.com/invite/eP8gE69
+
+[6]: https://www.curseforge.com/minecraft/mc-mods/journeymap-client-web-map
+
+[7]: https://modrinth.com/mod/journeymap-client-web-map
+
+[8]: https://github.com/javalin/javalin
+
+[9]: https://github.com/javalin/javalin/blob/master/LICENSE
+
+[10]: http://www.apache.org/licenses/

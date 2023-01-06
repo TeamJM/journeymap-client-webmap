@@ -132,11 +132,11 @@ minecraft {
     }
 }
 
-minecraft.runs.all {
-    lazyToken('minecraft_classpath') {
-        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
-    }
-}
+//minecraft.runs.all {
+//    lazyToken('minecraft_classpath') {
+//        configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+//    }
+//}
 
 reobf {
     shadowJar {
@@ -216,7 +216,7 @@ processResources() {
 
 task processDocs(type: Copy) {
     // update docs
-    from(file("/doc/")) {
+    from(file("../doc/")) {
         include '*.html'
         expand 'version': project.version,
                 'date': getDate(),

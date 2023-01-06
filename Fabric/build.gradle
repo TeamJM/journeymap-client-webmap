@@ -209,7 +209,7 @@ processResources() {
 
 task processDocs(type: Copy) {
     // update docs
-    from(file("/doc/")) {
+    from(file("../doc/")) {
         include '*.html'
         expand 'version': modVersion,
                 'date': getDate(),
