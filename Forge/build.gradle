@@ -147,6 +147,7 @@ reobf {
 
 shadowJar {
     archiveName = "${baseName}-${version}-forge.${extension}"
+    classifier = ''
     configurations = [project.configurations.shade]
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     dependencies {
@@ -180,7 +181,6 @@ tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
 
-jar.finalizedBy('reobfJar')
 
 // This block of code expands all the gradle properties in the specified resource targets.
 // It copies them into the targets and expands all the defined properties.
@@ -320,6 +320,9 @@ project.afterEvaluate {
 tasks.withType(PublishToMavenRepository) { task ->
     task.dependsOn reobfShadowJar
 }
+tasks.named('assemble').configure { dependsOn 'shadowJar' }
+jar.finalizedBy 'reobfJar'
+shadowJar.finalizedBy 'reobfShadowJar'
 
 publishing {
     repositories {
@@ -339,9 +342,7 @@ publishing {
             groupId project.group
             artifactId project.archivesBaseName
             version "${project.version}-forge"
-            artifact shadowJar {
-                classifier = ""
-            }
+            artifact shadowJar
         }
     }
 }
