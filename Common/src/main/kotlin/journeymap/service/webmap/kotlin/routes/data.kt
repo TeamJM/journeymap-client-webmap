@@ -56,6 +56,7 @@ internal fun dataGet(ctx: Context)
         "all" -> DataCache.INSTANCE.getAll(since!!).let {
             val map = it.toMutableMap()
 
+            map[AllData.Key.ambient] = map[AllData.Key.ambient]
             map[AllData.Key.animals] = map[AllData.Key.animals].modulesAreTerrible()
             map[AllData.Key.mobs] = map[AllData.Key.mobs].modulesAreTerrible()
             map[AllData.Key.players] = map[AllData.Key.players].modulesAreTerrible()
@@ -65,6 +66,7 @@ internal fun dataGet(ctx: Context)
             map
         }
 
+        "ambient" -> DataCache.INSTANCE.getAmbientCreatures(false).modulesAreTerrible()
         "animals" -> DataCache.INSTANCE.getAnimals(false).modulesAreTerrible()
         "mobs" -> DataCache.INSTANCE.getMobs(false).modulesAreTerrible()
         "images" -> ImagesData(since!!)

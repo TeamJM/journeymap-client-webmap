@@ -8,7 +8,7 @@ import journeymap.client.data.WorldData
 import journeymap.client.io.FileHandler
 import journeymap.client.io.RegionImageHandler
 import journeymap.client.model.MapType
-import journeymap.client.render.map.Tile
+import journeymap.client.render.map.RegionTile
 import journeymap.common.Journeymap
 import journeymap.common.helper.DimensionHelper
 import net.minecraft.client.Minecraft
@@ -114,7 +114,7 @@ internal fun tilesGet(ctx: Context) {
 
     val img: NativeImage = RegionImageHandler.getMergedChunks(
         worldDir, startCoord, endCoord, mapType, true, null,
-        Tile.TILESIZE, Tile.TILESIZE, false, showGrid
+        RegionTile.TILE_SIZE, RegionTile.TILE_SIZE, false, showGrid
     )
 
     val output: OutputStream = ctx.outputStream()
