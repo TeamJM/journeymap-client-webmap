@@ -8,8 +8,9 @@ import journeymap.client.data.AllData
 import journeymap.client.data.DataCache
 import journeymap.client.data.ImagesData
 import journeymap.client.model.EntityDTO
-import journeymap.client.waypoint.Waypoint
+import journeymap.client.waypoint.WaypointHolder
 import journeymap.common.Journeymap
+import journeymap.common.api.waypoint.Waypoint
 import org.apache.logging.log4j.Logger
 
 private val GSON: Gson =
@@ -40,8 +41,7 @@ private fun Any?.modulesAreTerrible(): MutableMap<*, *> {
     }
 }
 
-internal fun dataGet(ctx: Context)
-{
+internal fun dataGet(ctx: Context) {
     val since: Long? = ctx.queryParam("images.since")?.toLong()
     val type = ctx.pathParam("type")
 
@@ -76,11 +76,11 @@ internal fun dataGet(ctx: Context)
         "world" -> DataCache.INSTANCE.getWorld(false)
         "villagers" -> DataCache.INSTANCE.getVillagers(false).modulesAreTerrible()
         "waypoints" -> {
-            val waypoints: Collection<Waypoint> = DataCache.INSTANCE.getWaypoints(false)
+            val holders: Collection<WaypointHolder> = DataCache.INSTANCE.getWaypoints(false)
             val wpMap = mutableMapOf<String, Waypoint>()
 
-            for (waypoint in waypoints) {
-                wpMap[waypoint.id] = waypoint
+            for (holder in holders) {
+                wpMap[holder.id] = holder.waypoint
             }
 
             wpMap.toMap().modulesAreTerrible()
@@ -92,7 +92,7 @@ internal fun dataGet(ctx: Context)
     if (data == null) {
         logger.warn("Unknown data type '$type'")
         ctx.status(400)
-        ctx.result( "Unknown data type '$type'")
+        ctx.result("Unknown data type '$type'")
         return
     }
 

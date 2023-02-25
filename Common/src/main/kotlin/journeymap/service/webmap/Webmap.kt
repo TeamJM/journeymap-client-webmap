@@ -70,6 +70,7 @@ object Webmap {
                 ctx.header("Access-Control-Allow-Origin", "*")
                 ctx.header("Cache-Control", "no-cache")
             }.routes {
+                get("/waypoint/{id}/icon", ::iconGet)
                 get("/data/{type}", ::dataGet)
                 get("/logs", ::logGet)
                 get("/polygons", ::polygonsGet)
