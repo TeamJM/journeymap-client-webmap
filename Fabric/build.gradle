@@ -84,9 +84,10 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_mappings}@zip")
+        parchment("org.parchmentmc.data:parchment-${project.mappings}:${project.parchment_mappings}@zip")
     }
-//    mappings loom.officialMojangMappings()
+
+    modCompileOnly group: 'info.journeymap', name: 'journeymap-api', version: "${project.journeymap_api_version}+${project.minecraft_version}-fabric-SNAPSHOT", changing: true
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 

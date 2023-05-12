@@ -70,7 +70,6 @@ internal fun dataGet(ctx: Context) {
         "animals" -> DataCache.INSTANCE.getAnimals(false).modulesAreTerrible()
         "mobs" -> DataCache.INSTANCE.getMobs(false).modulesAreTerrible()
         "images" -> ImagesData(since!!)
-        "messages" -> DataCache.INSTANCE.getMessages(false)
         "player" -> DataCache.INSTANCE.getPlayer(false)
         "players" -> DataCache.INSTANCE.getPlayers(false).modulesAreTerrible()
         "world" -> DataCache.INSTANCE.getWorld(false)

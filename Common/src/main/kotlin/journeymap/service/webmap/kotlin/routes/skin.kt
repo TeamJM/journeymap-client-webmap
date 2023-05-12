@@ -12,16 +12,15 @@ import java.util.*
 internal fun skinGet(ctx: Context)
 {
     val uuid = UUID.fromString(ctx.pathParam("uuid"))
-    val username = Minecraft.getInstance().connection?.getPlayerInfo(uuid)?.profile?.name
-    val img: NativeImage
+    val profile = Minecraft.getInstance().connection?.getPlayerInfo(uuid)?.profile
 
-    img = if (username == null)
+    val img: NativeImage = if (profile == null)
     {
         NativeImage(24, 24, false)
     }
     else
     {
-        IgnSkin.getFaceImage(uuid, username)
+        IgnSkin.getFaceImage(profile)
     }
 
     ctx.contentType(ContentType.IMAGE_PNG)
