@@ -1,10 +1,20 @@
 buildscript {
     repositories {
         mavenCentral()
+
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net"
+        }
+        maven {
+            url = 'https://maven.parchmentmc.org'
+        }
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-
+        maven {
+            url = 'https://repo.spongepowered.org/maven'
+        }
     }
 
     dependencies {
@@ -14,58 +24,23 @@ buildscript {
 }
 
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'io.github.juuxel.loom-quiltflower' version '1.8.0'
+    id "java-library"
+    id "idea"
+    id "net.neoforged.gradle.userdev" version "[7.0.142,)"
+    id 'net.darkhax.curseforgegradle' version '1.+'
 }
+
+
 apply plugin: 'io.github.goooler.shadow'
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
 
-repositories {
-    maven {
-        name = "JourneyMap (Public)"
-        url = "https://jm.gserv.me/repository/maven-public/"
-    }
-    // used for local mods in the libs folder
-    flatDir {
-        dirs 'libs'
-    }
-
-    maven {
-        url "https://www.cursemaven.com"
-    }
-
-    maven {
-        url "https://maven.parchmentmc.org"
-    }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
-            }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
-}
-
-ext {
-    srcWebDir = "src/main/resources/assets/journeymap/ui/"
-    buildWebDir = "build/resources/main/assets/journeymap/ui/"
-    jmApiClassesDir = file("build/journeymap-api")
-}
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-version = "${project.mod_version}+${project.minecraft_version}-fabric"
+version = "${project.mod_version}+${project.minecraft_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
 archivesBaseName = project.base_name
+
 configurations {
     shade
 }
@@ -75,77 +50,60 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/journeymap_webmap.accesswidener")
-}
-
 dependencies {
-    implementation 'org.jetbrains:annotations:23.0.0'
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${project.mappings}:${project.parchment_mappings}@zip")
-    }
-
-    modCompileOnly group: 'info.journeymap', name: 'journeymap-api', version: "${project.journeymap_api_version}+${project.minecraft_version}-fabric-SNAPSHOT", changing: true
-    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-
-//    modImplementation "curse.maven:journeymap-32274:${project.jourenymap_fabric_version}"
-    compileOnly project(":Common")
+    implementation "net.neoforged:neoforge:${neoforge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation group: "info.journeymap", name: "journeymap-api-neoforge", version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
+//    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-inline:4.1.+'
 
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
     //external libs shade
     shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
-    shade group: 'io.javalin', name: 'javalin', version: '5.3.0'
-    shade group: 'io.github.earcut4j', name: 'earcut4j', version: '2.2.2'
+    shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
     shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
+
+    compileOnly project(":Common")
 }
 
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
-    options.encoding = "UTF-8"
+mixin {
+    add sourceSets.main, "journeymap-refmap.json"
 }
 
-loom {
-    accessWidenerPath.set(project(":Common").file("src/main/resources/journeymap_webmap.accesswidener"))
-    runs {
-        client {
-            client()
-            setConfigName("Fabric Client")
-            ideConfigGenerated(true)
-            runDir("run/fabric/client")
-            programArg("--username=Dev")
-        }
-        server {
-            server()
-            setConfigName("Fabric Server")
-            ideConfigGenerated(true)
-            runDir("run/fabric/server")
-        }
+runs {
+    configureEach {
+        systemProperty "mixin.debug.export", "true"
+        systemProperty "forge.logging.console.level", "info"
+        systemProperty "journeymap.map_testing", "true"
+
+        modSource project.sourceSets.main
+    }
+    client {
+        workingDirectory project.file("run/client")
+    }
+    server {
+        programArgument "--nogui"
+        workingDirectory project.file("run/server")
     }
 }
 
-remapJar {
-    inputFile.set shadowJar.archiveFile
-    dependsOn shadowJar
-//    classifier "fabric"
-}
+tasks.build.dependsOn shadowJar
+jar.finalizedBy('shadowJar')
 
 shadowJar {
-    archiveName = "${baseName}-${version}-slim.${extension}".replace("-fabric", "")
+    archiveName = "${baseName}-${version}-forge.${extension}"
+    classifier = ''
     configurations = [project.configurations.shade]
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     dependencies {
         exclude("META-INF/maven/**")
         exclude("META-INF/services/org.*")
         exclude("META-INF/services/jakarta.*")
-        exclude("fabric-**")
         exclude(dependency("org.ow2.asm:.*:.*"))
     }
-
     minimize {
         // API has utility classes that must be included
         exclude(dependency("info.journeymap:.*:.*"))
@@ -166,32 +124,30 @@ shadowJar {
     exclude 'LICENSE.txt'
 }
 
+tasks.withType(JavaCompile) {
+    source(project(":Common").sourceSets.main.allSource)
+    options.encoding = "UTF-8"
+}
+
+
 // This block of code expands all the gradle properties in the specified resource targets.
 // It copies them into the targets and expands all the defined properties.
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', 'license.txt']
+def resourceTargets = ['META-INF/neoforge.mods.toml', 'pack.mcmeta', 'license.txt']
 def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
 def replaceProperties = [
-        version   : modVersion,
-        modVersion: modVersion,
-        mcversion : project.minecraft_version,
-        date      : getDate(),
+        version     : project.version,
+        modVersion  : modVersion,
+        mcversion   : project.minecraft_version,
+        date        : getDate()
 ]
 
 processResources() {
     from project(":Common").sourceSets.main.resources
+    //    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     // this will ensure that this task is redone when the versions change.
     inputs.properties replaceProperties
     filesMatching(resourceTargets) {
         expand replaceProperties
-    }
-
-    inputs.property "version", project.version
-    filesMatching("fabric.mod.json") {
-        expand 'version': modVersion,
-                'date': getDate(),
-                'mcversion': project.minecraft_version,
-                'loaderversion': project.fabric_api_version,
-                'loadername': 'fabric'
     }
 
     intoTargets.each { target ->
@@ -211,16 +167,15 @@ task processDocs(type: Copy) {
     // update docs
     from(file("../doc/")) {
         include '*.html'
-        expand 'version': modVersion,
+        expand 'version': project.version,
                 'date': getDate(),
                 'mcversion': project.minecraft_version,
-                'loaderversion': project.fabric_api_version,
-                'loadername': 'fabric'
+                'loaderversion': project.forge_version,
+                'loadername': "Forge"
     }
     into 'build/doc'
 }
 
-//tasks.build.dependsOn reobfShadowJar
 
 clean.doFirst {
     // Remove the Webpack bundled assets as part of the clean task
@@ -239,7 +194,8 @@ jar {
                 "Implementation-Version"  : "${version}",
                 "Implementation-Vendor"   : project.group_id,
                 "Implementation-URL"      : "http://journeymap.info",
-                "Implementation-Timestamp": getDate()
+                "Implementation-Timestamp": getDate(),
+                "FMLAT"                   : "accesstransformer.cfg",
         ])
     }
 }
@@ -262,6 +218,7 @@ if (!project.hasProperty("curseForgeApiKey")) {
 if (!project.hasProperty("modrinthApiKey")) {
     ext.modrinthApiKey = "notset"
 }
+
 curseforge {
     project {
         id = '793035'
@@ -269,34 +226,29 @@ curseforge {
         changelogType = 'html'
         releaseType = release_type
         addGameVersion project.minecraft_version
-        addGameVersion 'Fabric'
-        addGameVersion 'Quilt'
-
         relations {
             requiredDependency 'journeymap'
         }
 
-        mainArtifact(remapJar) {
-            displayName = "${archivesBaseName}-${version}"
+        mainArtifact(shadowJar) {
+            displayName = "${archivesBaseName}-${version}-forge"
             changelog = file('/build/doc/changelog.html')
-        }
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
         }
     }
 }
 
-tasks.modrinth.dependsOn(tasks.build)
+
+tasks.modrinth.dependsOn(tasks.assemble)
 
 modrinth {
     token = "${modrinthApiKey}"
     projectId = "YaZ1fUTg"
-    versionNumber = "${version}"
-    versionName = "${archivesBaseName}-${version}"
+    versionNumber = "${version}-forge"
+    versionName = "${archivesBaseName}-${version}-forge"
     versionType = release_type
-    uploadFile = remapJar
+    uploadFile = shadowJar
     gameVersions = ["${project.minecraft_version}"]
-    loaders = ["fabric","quilt"]
+    loaders = ["forge"]
     changelog = file('/build/doc/changelog.html').exists() ? file('/build/doc/changelog.html').text : null
     dependencies {
         required.project "journeymap"
@@ -312,10 +264,12 @@ project.afterEvaluate {
         projectTask.dependsOn build
     }
 }
-
 tasks.withType(PublishToMavenRepository) { task ->
-    task.dependsOn remapJar
+    task.dependsOn reobfShadowJar
 }
+tasks.named('assemble').configure { dependsOn 'shadowJar' }
+jar.finalizedBy 'reobfJar'
+shadowJar.finalizedBy 'reobfShadowJar'
 
 publishing {
     repositories {
@@ -334,8 +288,8 @@ publishing {
         mavenJava(MavenPublication) {
             groupId project.group
             artifactId project.archivesBaseName
-            version "${project.version}"
-            artifact remapJar
+            version "${project.version}-forge"
+            artifact shadowJar
         }
     }
 }

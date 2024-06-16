@@ -53,7 +53,12 @@ object Webmap {
                         if (!dir.exists()) {
                             logger.info("1Attempting to copy web content to {}", File(Constants.JOURNEYMAP_DIR, "web"))
                             val created =
-                                FileHandler.copyResources(dir, ResourceLocation(journeymap.Constants.MOD_ID, "web"), "", false)
+                                FileHandler.copyResources(
+                                    dir,
+                                    ResourceLocation(journeymap.Constants.MOD_ID, "web"),
+                                    "",
+                                    false
+                                )
                             logger.info("Web content copied successfully: {}", created)
                         }
 
@@ -69,16 +74,16 @@ object Webmap {
             }.before { ctx ->
                 ctx.header("Access-Control-Allow-Origin", "*")
                 ctx.header("Cache-Control", "no-cache")
-            }.routes {
-                get("/waypoint/{id}/icon", ::iconGet)
-                get("/data/{type}", ::dataGet)
-                get("/logs", ::logGet)
-                get("/polygons", ::polygonsGet)
-                get("/resources", ::resourcesGet)
-                get("/skin/{uuid}", ::skinGet)
-                get("/status", ::statusGet)
-                get("/tiles/tile.png", ::tilesGet)
-            }.start(port)
+            }
+            get("/waypoint/{id}/icon", ::iconGet)
+            get("/data/{type}", ::dataGet)
+            get("/logs", ::logGet)
+            get("/polygons", ::polygonsGet)
+            get("/resources", ::resourcesGet)
+            get("/skin/{uuid}", ::skinGet)
+            get("/status", ::statusGet)
+            get("/tiles/tile.png", ::tilesGet)
+            app?.start(port)
 
         } catch (e: Exception) {
             logger.error("Failed to start server: $e")

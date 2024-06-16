@@ -77,14 +77,13 @@ subprojects {
     dependencies {
         implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
         compileOnly "ignored:journeymap:6.0.0+1.19.4-forge"
-        compileOnly "ignored:journeymap:6.0.0+1.19.4-forge"
         // for annotations
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
         // external libs
         implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
         implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
-        implementation group: 'io.javalin', name: 'javalin', version: '5.3.0'
+        implementation group: 'io.javalin', name: 'javalin', version: '6.0.0'
         testImplementation "ignored:journeymap:6.0.0+1.19.4-forge"
 
     }

@@ -19,7 +19,7 @@ buildscript {
 
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'gradle.plugin.com.github.johnrengelman:shadow:7.1.2'
+        classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
         classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
         classpath 'org.parchmentmc:librarian:1.+'
         classpath 'org.spongepowered:mixingradle:0.7.+'
@@ -30,7 +30,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'eclipse'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'io.github.goooler.shadow'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.modrinth.minotaur"
@@ -64,8 +64,7 @@ dependencies {
     //external libs shade
     shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
-    shade group: 'io.javalin', name: 'javalin', version: '5.3.0'
-    shade group: 'io.github.earcut4j', name: 'earcut4j', version: '2.2.2'
+    shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
     shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
 
     compileOnly project(":Common")
