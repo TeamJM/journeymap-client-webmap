@@ -3,23 +3,14 @@ buildscript {
         mavenCentral()
 
         maven {
-            name = "forge"
-            url = "https://maven.minecraftforge.net"
-        }
-        maven {
-            url = 'https://maven.parchmentmc.org'
-        }
-        maven {
             url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            url = 'https://repo.spongepowered.org/maven'
         }
     }
 
     dependencies {
         classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
     }
 }
 
@@ -30,7 +21,8 @@ plugins {
     id 'net.darkhax.curseforgegradle' version '1.+'
 }
 
-
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'kotlin'
 apply plugin: 'io.github.goooler.shadow'
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
@@ -57,20 +49,17 @@ dependencies {
 //    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-inline:4.1.+'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
 
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
     //external libs shade
     shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
+    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
     shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
     shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
 
     compileOnly project(":Common")
-}
-
-mixin {
-    add sourceSets.main, "journeymap-refmap.json"
 }
 
 runs {
@@ -94,9 +83,10 @@ tasks.build.dependsOn shadowJar
 jar.finalizedBy('shadowJar')
 
 shadowJar {
-    archiveName = "${baseName}-${version}-forge.${extension}"
-    classifier = ''
+    mustRunAfter(processTestResources)
+    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}-neoforge.${archiveExtension.get()}")
     configurations = [project.configurations.shade]
+    archiveClassifier.set("")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     dependencies {
         exclude("META-INF/maven/**")
@@ -135,10 +125,10 @@ tasks.withType(JavaCompile) {
 def resourceTargets = ['META-INF/neoforge.mods.toml', 'pack.mcmeta', 'license.txt']
 def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
 def replaceProperties = [
-        version     : project.version,
-        modVersion  : modVersion,
-        mcversion   : project.minecraft_version,
-        date        : getDate()
+        version   : project.version,
+        modVersion: modVersion,
+        mcversion : project.minecraft_version,
+        date      : getDate()
 ]
 
 processResources() {
@@ -183,7 +173,7 @@ clean.doFirst {
 }
 
 jar {
-    classifier = 'slim'
+    archiveClassifier.set('slim')
     dependsOn 'processDocs'
     manifest {
         attributes([
@@ -219,23 +209,23 @@ if (!project.hasProperty("modrinthApiKey")) {
     ext.modrinthApiKey = "notset"
 }
 
-curseforge {
-    project {
-        id = '793035'
-        apiKey = "${curseForgeApiKey}"
-        changelogType = 'html'
-        releaseType = release_type
-        addGameVersion project.minecraft_version
-        relations {
-            requiredDependency 'journeymap'
-        }
-
-        mainArtifact(shadowJar) {
-            displayName = "${archivesBaseName}-${version}-forge"
-            changelog = file('/build/doc/changelog.html')
-        }
-    }
-}
+//curseforge {
+//    project {
+//        id = '793035'
+//        apiKey = "${curseForgeApiKey}"
+//        changelogType = 'html'
+//        releaseType = release_type
+//        addGameVersion project.minecraft_version
+//        relations {
+//            requiredDependency 'journeymap'
+//        }
+//
+//        mainArtifact(shadowJar) {
+//            displayName = "${archivesBaseName}-${version}-forge"
+//            changelog = file('/build/doc/changelog.html')
+//        }
+//    }
+//}
 
 
 tasks.modrinth.dependsOn(tasks.assemble)
@@ -264,12 +254,20 @@ project.afterEvaluate {
         projectTask.dependsOn build
     }
 }
-tasks.withType(PublishToMavenRepository) { task ->
-    task.dependsOn reobfShadowJar
+
+TaskCollection.metaClass.excludingNeoTasks = { ->
+    delegate.matching { !it.name.startsWith("neo") }
 }
+
+tasks.withType(JavaCompile).excludingNeoTasks().configureEach {
+    source(project(":Common").sourceSets.main.allSource)
+}
+
 tasks.named('assemble').configure { dependsOn 'shadowJar' }
-jar.finalizedBy 'reobfJar'
-shadowJar.finalizedBy 'reobfShadowJar'
+
+jar.finalizedBy 'shadowJar'
+//
+//shadowJar.finalizedBy 'reobfShadowJar'
 
 publishing {
     repositories {

@@ -4,13 +4,13 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.javalin.http.ContentType
 import io.javalin.http.Context
+import journeymap.api.v2.common.waypoint.Waypoint
 import journeymap.client.data.AllData
 import journeymap.client.data.DataCache
 import journeymap.client.data.ImagesData
 import journeymap.client.model.EntityDTO
-import journeymap.client.waypoint.WaypointHolder
+import journeymap.client.waypoint.ClientWaypointImpl
 import journeymap.common.Journeymap
-import journeymap.common.api.waypoint.Waypoint
 import org.apache.logging.log4j.Logger
 
 private val GSON: Gson =
@@ -75,11 +75,11 @@ internal fun dataGet(ctx: Context) {
         "world" -> DataCache.INSTANCE.getWorld(false)
         "villagers" -> DataCache.INSTANCE.getVillagers(false).modulesAreTerrible()
         "waypoints" -> {
-            val holders: Collection<WaypointHolder> = DataCache.INSTANCE.getWaypoints(false)
+            val holders: Collection<ClientWaypointImpl> = DataCache.INSTANCE.getWaypoints(false)
             val wpMap = mutableMapOf<String, Waypoint>()
 
             for (holder in holders) {
-                wpMap[holder.id] = holder.waypoint
+                wpMap[holder.id] = holder
             }
 
             wpMap.toMap().modulesAreTerrible()

@@ -1,5 +1,5 @@
-modLoader="lowcode"
-loaderVersion="[44,)" #
+modLoader="javafml"
+loaderVersion="[50,)" #
 issueTrackerURL="https://github.com/TeamJM/journeymap/issues"
 license="All rights reserved"
 
@@ -20,7 +20,7 @@ Client WebMap for Journeymap. Built: ${date}.
 [[dependencies.journeymap_webmap]]
 modId="forge"
 mandatory=true
-versionRange="[45.0.0,)"
+versionRange="[50.0.0,)"
 
 [[dependencies.journeymap_webmap]]
 modId="journeymap"

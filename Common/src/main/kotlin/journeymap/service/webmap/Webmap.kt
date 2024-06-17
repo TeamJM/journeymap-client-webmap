@@ -1,7 +1,6 @@
 package journeymap.service.webmap
 
 import io.javalin.Javalin
-import io.javalin.apibuilder.ApiBuilder.get
 import io.javalin.http.staticfiles.Location
 import journeymap.client.Constants
 import journeymap.client.JourneymapClient
@@ -51,11 +50,11 @@ object Webmap {
                     else -> {
                         val dir = File(FileHandler.getMinecraftDirectory(), Constants.WEB_DIR)
                         if (!dir.exists()) {
-                            logger.info("1Attempting to copy web content to {}", File(Constants.JOURNEYMAP_DIR, "web"))
+                            logger.info("Attempting to copy web content to {}", File(Constants.JOURNEYMAP_DIR, "web"))
                             val created =
                                 FileHandler.copyResources(
                                     dir,
-                                    ResourceLocation(journeymap.Constants.MOD_ID, "web"),
+                                    ResourceLocation.fromNamespaceAndPath(journeymap.Constants.MOD_ID, "web"),
                                     "",
                                     false
                                 )
@@ -75,15 +74,15 @@ object Webmap {
                 ctx.header("Access-Control-Allow-Origin", "*")
                 ctx.header("Cache-Control", "no-cache")
             }
-            get("/waypoint/{id}/icon", ::iconGet)
-            get("/data/{type}", ::dataGet)
-            get("/logs", ::logGet)
-            get("/polygons", ::polygonsGet)
-            get("/resources", ::resourcesGet)
-            get("/skin/{uuid}", ::skinGet)
-            get("/status", ::statusGet)
-            get("/tiles/tile.png", ::tilesGet)
-            app?.start(port)
+                .get("/waypoint/{id}/icon", ::iconGet)
+                .get("/data/{type}", ::dataGet)
+                .get("/logs", ::logGet)
+                .get("/polygons", ::polygonsGet)
+                .get("/resources", ::resourcesGet)
+                .get("/skin/{uuid}", ::skinGet)
+                .get("/status", ::statusGet)
+                .get("/tiles/tile.png", ::tilesGet)
+                app?.start(port)
 
         } catch (e: Exception) {
             logger.error("Failed to start server: $e")

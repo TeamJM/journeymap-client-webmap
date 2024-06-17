@@ -30,7 +30,7 @@ internal fun resourcesGet(ctx: Context)
 {
     val img: NativeImage
     val resource = ctx.queryParam("resource")
-    val resourceLocation = resource?.let { ResourceLocation(it) }
+    val resourceLocation = resource?.let { ResourceLocation.parse(it) }
 
     var extension = resource?.split('.')?.last()
 

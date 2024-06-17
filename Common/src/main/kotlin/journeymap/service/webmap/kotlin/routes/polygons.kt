@@ -4,8 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.javalin.http.ContentType
 import journeymap.api.client.impl.ClientAPI
-import journeymap.client.api.display.Context
-import journeymap.client.api.display.PolygonOverlay
+import journeymap.api.v2.client.display.Context
+import journeymap.api.v2.client.display.PolygonOverlay
+
 import journeymap.client.cartography.color.RGB
 import journeymap.client.render.draw.DrawPolygonStep
 import journeymap.client.render.draw.OverlayDrawStep

@@ -8,10 +8,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
     }
 }
-
+plugins {
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
+}
 configurations.all {
     // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -28,7 +30,7 @@ subprojects {
     }
     sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
     java.withSourcesJar()
 
     jar {
@@ -76,29 +78,29 @@ subprojects {
 
     dependencies {
         implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
-        compileOnly "ignored:journeymap:6.0.0+1.19.4-forge"
+        compileOnly "ignored:journeymap-forge-1.21-6.0.0-beta.1"
         // for annotations
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
         // external libs
         implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-        implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
-        implementation group: 'io.javalin', name: 'javalin', version: '6.0.0'
-        testImplementation "ignored:journeymap:6.0.0+1.19.4-forge"
+        implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+        implementation group: 'io.javalin', name: 'javalin', version: '6.1.6'
+        testImplementation "ignored:journeymap-forge-1.21-6.0.0-beta.1"
 
     }
 
 
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'
-        it.options.release = 17
+        it.options.release = 21
     }
 
     compileKotlin {
         source(project(":Common").sourceSets.main.allSource)
         inputs.file "../gradle.properties"
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "21"
             freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
         }
     }

@@ -8,17 +8,17 @@ buildscript {
     }
 
     dependencies {
-        classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
+//        classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
     }
 }
 
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'io.github.juuxel.loom-quiltflower' version '1.8.0'
 }
-apply plugin: 'io.github.goooler.shadow'
+//apply plugin: 'io.github.goooler.shadow'
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
 
@@ -58,14 +58,15 @@ ext {
     jmApiClassesDir = file("build/journeymap-api")
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
-version = "${project.mod_version}+${project.minecraft_version}-fabric"
+def loaderName = "fabric"
+version = "${project.minecraft_version}-${project.mod_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.base_name
+archivesBaseName = "${project.base_name}-${loaderName}"
 configurations {
     shade
 }
@@ -87,21 +88,30 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${project.mappings}:${project.parchment_mappings}@zip")
     }
 
-    modCompileOnly group: 'info.journeymap', name: 'journeymap-api', version: "${project.journeymap_api_version}+${project.minecraft_version}-fabric-SNAPSHOT", changing: true
+    modCompileOnly group: 'info.journeymap', name: 'journeymap-api-fabric', version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-
 //    modImplementation "curse.maven:journeymap-32274:${project.jourenymap_fabric_version}"
     compileOnly project(":Common")
 
-    shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
-
+    implementation include (group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true)
+    implementation include (group: 'io.javalin', name: 'javalin', version: '6.1.6')
     //external libs shade
-    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
-    shade group: 'io.javalin', name: 'javalin', version: '5.3.0'
-    shade group: 'io.github.earcut4j', name: 'earcut4j', version: '2.2.2'
-    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-security', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-io', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-http', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-util', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
+    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-xml', version: '11.0.20')
+    compileOnly include (group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0')
+    compileOnly include (group: 'org.eclipse.jetty.toolchain', name: 'jetty-jakarta-servlet-api', version: '5.0.2')
+
+    compileOnly include (group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23')
+
+//    compileOnly include (group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3')
 }
 
 tasks.withType(JavaCompile) {
@@ -128,54 +138,58 @@ loom {
     }
 }
 
+sourceSets {
+    main.kotlin.srcDirs = ['src/main/java', 'src/main/kotlin']
+}
+
 remapJar {
-    inputFile.set shadowJar.archiveFile
-    dependsOn shadowJar
-//    classifier "fabric"
+//    inputFile.set shadowJar.archiveFile
+//    dependsOn shadowJar
+    archiveClassifier.set("fabric")
 }
 
-shadowJar {
-    archiveName = "${baseName}-${version}-slim.${extension}".replace("-fabric", "")
-    configurations = [project.configurations.shade]
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    dependencies {
-        exclude("META-INF/maven/**")
-        exclude("META-INF/services/org.*")
-        exclude("META-INF/services/jakarta.*")
-        exclude("fabric-**")
-        exclude(dependency("org.ow2.asm:.*:.*"))
-    }
-
-    minimize {
-        // API has utility classes that must be included
-        exclude(dependency("info.journeymap:.*:.*"))
-        exclude(dependency("org.slf4j:.*:.*"))
-    }
-
-    relocate "jakarta", "info.journeymap.shaded.jakarta"
-    relocate "javax.servlet", "info.journeymap.shaded.org.javax.servlet"
-    relocate "org.intellij", "info.journeymap.shaded.org.intellij"
-    relocate "org.jetbrains", "info.journeymap.shaded.org.jetbrains"
-    relocate "org.slf4j", "info.journeymap.shaded.org.slf4j"
-    relocate "org.eclipse", "info.journeymap.shaded.org.eclipse"
-
-    relocate "kotlin", "info.journeymap.shaded.kotlin.kotlin"
-    relocate "io.javalin", "info.journeymap.shaded.io.javalin"
-
-    exclude 'dummyThing'
-    exclude 'LICENSE.txt'
-}
+//shadowJar {
+////    archiveName = "${baseName}-${version}-slim.${extension}".replace("-fabric", "")
+//    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}.${archiveExtension.get()}")
+//    archiveClassifier.set("shadow")
+//    configurations = [project.configurations.shade]
+//    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+//    dependencies {
+//        exclude("META-INF/maven/**")
+//        exclude("META-INF/services/org.*")
+//        exclude("META-INF/services/jakarta.*")
+//        exclude("fabric-**")
+//        exclude(dependency("org.ow2.asm:.*:.*"))
+//    }
+//
+//    minimize {
+//        // API has utility classes that must be included
+//        exclude(dependency("info.journeymap:.*:.*"))
+//        exclude(dependency("org.slf4j:.*:.*"))
+//    }
+//
+//    relocate "jakarta", "info.journeymap.shaded.jakarta"
+//    relocate "javax.servlet", "info.journeymap.shaded.org.javax.servlet"
+//    relocate "org.intellij", "info.journeymap.shaded.org.intellij"
+//    relocate "org.jetbrains", "info.journeymap.shaded.org.jetbrains"
+//    relocate "org.slf4j", "info.journeymap.shaded.org.slf4j"
+//    relocate "org.eclipse", "info.journeymap.shaded.org.eclipse"
+//
+//    relocate "kotlin", "info.journeymap.shaded.kotlin.kotlin"
+//    relocate "io.javalin", "info.journeymap.shaded.io.javalin"
+//
+//    exclude 'dummyThing'
+//    exclude 'LICENSE.txt'
+//}
 
 // This block of code expands all the gradle properties in the specified resource targets.
 // It copies them into the targets and expands all the defined properties.
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', 'license.txt']
 def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
-def replaceProperties = [
-        version   : modVersion,
-        modVersion: modVersion,
-        mcversion : project.minecraft_version,
-        date      : getDate(),
-]
+def replaceProperties = [version   : modVersion,
+                         modVersion: modVersion,
+                         mcversion : project.minecraft_version,
+                         date      : getDate(),]
 
 processResources() {
     from project(":Common").sourceSets.main.resources
@@ -228,25 +242,24 @@ clean.doFirst {
 }
 
 jar {
-    classifier = 'slim'
+    archiveClassifier.set("slim")
     dependsOn 'processDocs'
     manifest {
-        attributes([
-                "Specification-Title"     : project.name,
-                "Specification-Vendor"    : project.group_id,
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : project.group_id,
-                "Implementation-URL"      : "http://journeymap.info",
-                "Implementation-Timestamp": getDate()
-        ])
+        attributes(["Specification-Title"     : project.name,
+                    "Specification-Vendor"    : project.group_id,
+                    "Specification-Version"   : "1", // We are version 1 of ourselves
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : "${version}",
+                    "Implementation-Vendor"   : project.group_id,
+                    "Implementation-URL"      : "http://journeymap.info",
+                    "Implementation-Timestamp": getDate()])
     }
 }
 
 
 artifacts {
-    archives shadowJar
+//    archives shadowJar
+    archives remapJar
 }
 
 def getDate() {
@@ -296,7 +309,7 @@ modrinth {
     versionType = release_type
     uploadFile = remapJar
     gameVersions = ["${project.minecraft_version}"]
-    loaders = ["fabric","quilt"]
+    loaders = ["fabric", "quilt"]
     changelog = file('/build/doc/changelog.html').exists() ? file('/build/doc/changelog.html').text : null
     dependencies {
         required.project "journeymap"
@@ -305,17 +318,12 @@ modrinth {
 
 // Ensure build is done prior to cursegradle tasks
 project.afterEvaluate {
-    project.tasks.findAll { task ->
-        (task.name.startsWith('curseforge') || task.name.startsWith('modrinth'))
-                && (task.name != 'curseforge' || task.name != 'modrinth')
-    }.each { projectTask ->
-        projectTask.dependsOn build
+    project.tasks.findAll { task -> (task.name.startsWith('curseforge') || task.name.startsWith('modrinth')) && (task.name != 'curseforge' || task.name != 'modrinth')
+    }.each { projectTask -> projectTask.dependsOn build
     }
 }
 
-tasks.withType(PublishToMavenRepository) { task ->
-    task.dependsOn remapJar
-}
+tasks.withType(PublishToMavenRepository) { task -> task.dependsOn remapJar}
 
 publishing {
     repositories {
