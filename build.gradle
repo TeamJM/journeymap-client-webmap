@@ -78,7 +78,7 @@ subprojects {
 
     dependencies {
         implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
-        compileOnly "curse.maven:journeymap-32274:${project.jourenymap_forge_version}"
+        compileOnly "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
         // for annotations
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
@@ -86,7 +86,7 @@ subprojects {
         implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
         implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
         implementation group: 'io.javalin', name: 'javalin', version: '6.1.6'
-        testImplementation "curse.maven:journeymap-32274:${project.jourenymap_forge_version}"
+        testImplementation "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
 
     }
 
