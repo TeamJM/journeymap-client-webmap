@@ -216,24 +216,6 @@ if (!project.hasProperty("modrinthApiKey")) {
     ext.modrinthApiKey = project.findProperty("modrinth_api_key") ?: "notset"
 }
 
-//curseforge {
-//    project {
-//        id = '793035'
-//        apiKey = "${curseForgeApiKey}"
-//        changelogType = 'html'
-//        releaseType = release_type
-//        addGameVersion project.minecraft_version
-//        relations {
-//            requiredDependency 'journeymap'
-//        }
-//
-//        mainArtifact(shadowJar) {
-//            displayName = "${archivesBaseName}-${version}-forge"
-//            changelog = file('/build/doc/changelog.html')
-//        }
-//    }
-//}
-
 task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
 
     apiToken = "${curseForgeApiKey}"
