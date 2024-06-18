@@ -1,4 +1,4 @@
-package journeymap.service.webmap
+package journeymap_webmap.service.webmap
 
 import io.javalin.Javalin
 import io.javalin.http.staticfiles.Location
@@ -6,7 +6,8 @@ import journeymap.client.Constants
 import journeymap.client.JourneymapClient
 import journeymap.client.io.FileHandler
 import journeymap.common.Journeymap
-import journeymap.service.webmap.kotlin.routes.*
+import journeymap_webmap.Constants.MOD_ID
+import journeymap_webmap.service.webmap.kotlin.routes.*
 import net.minecraft.resources.ResourceLocation
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -54,7 +55,7 @@ object Webmap {
                             val created =
                                 FileHandler.copyResources(
                                     dir,
-                                    ResourceLocation.fromNamespaceAndPath(journeymap.Constants.MOD_ID, "web"),
+                                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "web"),
                                     "",
                                     false
                                 )
@@ -82,7 +83,7 @@ object Webmap {
                 .get("/skin/{uuid}", ::skinGet)
                 .get("/status", ::statusGet)
                 .get("/tiles/tile.png", ::tilesGet)
-                app?.start(port)
+            app?.start(port)
 
         } catch (e: Exception) {
             logger.error("Failed to start server: $e")

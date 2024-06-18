@@ -1,4 +1,4 @@
-package journeymap.service.webmap.kotlin.routes
+package journeymap_webmap.service.webmap.kotlin.routes
 
 import com.mojang.blaze3d.platform.NativeImage
 import io.javalin.http.ContentType

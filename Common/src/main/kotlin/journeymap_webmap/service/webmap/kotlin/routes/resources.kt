@@ -1,4 +1,4 @@
-package journeymap.service.webmap.kotlin.routes
+package journeymap_webmap.service.webmap.kotlin.routes
 
 import com.mojang.blaze3d.platform.NativeImage
 import io.javalin.http.Context
@@ -6,8 +6,8 @@ import journeymap.client.JourneymapClient
 import journeymap.client.io.FileHandler.ASSETS_JOURNEYMAP_UI
 import journeymap.client.texture.TextureCache
 import journeymap.common.Journeymap
-import journeymap.common.kotlin.extensions.getResourceAsStream
-import journeymap.service.webmap.Webmap
+import journeymap_webmap.common.kotlin.extensions.getResourceAsStream
+import journeymap_webmap.service.webmap.Webmap
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import org.apache.logging.log4j.Logger

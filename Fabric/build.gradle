@@ -68,7 +68,7 @@ def modVersion = "${project.mod_version}"
 group = project.group_id
 archivesBaseName = "${project.base_name}-${loaderName}"
 configurations {
-    shade
+//    shade
 }
 
 configurations.all {

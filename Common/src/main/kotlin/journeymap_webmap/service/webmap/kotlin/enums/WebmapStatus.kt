@@ -1,4 +1,4 @@
-package journeymap.service.webmap.kotlin.enums
+package journeymap_webmap.service.webmap.kotlin.enums
 
 enum class WebmapStatus(val status: String)
 {

@@ -42,11 +42,12 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
 
-version = "${project.mod_version}+${project.minecraft_version}"
+def loaderName = "forge"
+version = "${project.minecraft_version}-${project.mod_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.base_name
+archivesBaseName = "${project.base_name}-${loaderName}"
 
 configurations {
     shade
@@ -72,16 +73,16 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly group: 'info.journeymap', name: 'journeymap-api-forge', version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
 //    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-inline:4.1.+'
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+//    testImplementation 'junit:junit:4.12'
+//    testImplementation 'org.mockito:mockito-inline:4.1.+'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
     //external libs shade
 //    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
     shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
-    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
+//    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
 
     compileOnly project(":Common")
 }

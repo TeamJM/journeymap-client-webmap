@@ -1,4 +1,4 @@
-package journeymap.service.webmap.kotlin
+package journeymap_webmap.service.webmap.kotlin
 
 import io.javalin.http.Context
 import journeymap.common.Journeymap

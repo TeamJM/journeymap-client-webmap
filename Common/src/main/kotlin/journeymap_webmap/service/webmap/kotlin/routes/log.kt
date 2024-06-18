@@ -1,4 +1,4 @@
-package journeymap.service.webmap.kotlin.routes
+package journeymap_webmap.service.webmap.kotlin.routes
 
 import io.javalin.http.Context
 import journeymap.client.log.JMLogger

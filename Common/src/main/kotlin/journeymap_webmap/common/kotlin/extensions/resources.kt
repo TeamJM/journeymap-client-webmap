@@ -1,4 +1,4 @@
-package journeymap.common.kotlin.extensions
+package journeymap_webmap.common.kotlin.extensions
 
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation

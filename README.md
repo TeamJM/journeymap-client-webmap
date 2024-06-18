@@ -30,11 +30,11 @@ The project [WebMap Client][4] contains the javascript resources used by this pr
 
 ### 1. Git the JourneyMap WebMap source
 
-Check out a branch of the JourneyMap WebMap GIT repo to a directory called journeymap-webmap.  For example:
+Check out a branch of the JourneyMap WebMap GIT repo to a directory called journeymap_webmap.  For example:
 
 ```sh
-    git clone git@github.com:TeamJM/journeymap-webmap.git   
-    cd journeymap-webmap-client
+    git clone git@github.com:TeamJM/journeymap_webmap.git   
+    cd journeymap_webmap-client
     git fetch && git checkout (branchname)
 ```
 
@@ -56,7 +56,7 @@ Check out a branch of the JourneyMap WebMap GIT repo to a directory called journ
 To enable HotSwap:
 
 1. Go to File > Settings... > Build, Execution, Deployment > Build Tools > Gradle
-2. For the journeymap-webmap project, change "Build and run using" to "IntelliJ IDEA"
+2. For the journeymap_webmap project, change "Build and run using" to "IntelliJ IDEA"
 
 If builds begin failing with the error "java.lang.UnsupportedClassVersionError:
 org/intellij/erlang/jps/model/JpsErlangModelSerializerExtension", you'll need to use a newer project JDK or simply
@@ -69,8 +69,8 @@ disable the Erlang plugin:
 ### 3. Build the jars
 
 * Update `project.properties` version info
-* Build using Gradle panel > journeymap-webmap > Tasks > build > build
-* The end result will be in `build/libs/journeymap-webmap*.jar`
+* Build using Gradle panel > journeymap_webmap > Tasks > build > build
+* The end result will be in `build/libs/journeymap_webmap*.jar`
 
 #### JourneyMap WebMap includes and/or makes use of the following software under their respective licenses:
 [Javalin][8]:

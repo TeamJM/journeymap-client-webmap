@@ -1,4 +1,4 @@
-package journeymap;
+package journeymap_webmap;
 
 public interface Constants
 {

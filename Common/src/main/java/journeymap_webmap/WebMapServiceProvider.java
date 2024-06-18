@@ -1,7 +1,7 @@
-package journeymap;
+package journeymap_webmap;
 
 import journeymap.api.services.WebMapService;
-import journeymap.service.webmap.Webmap;
+import journeymap_webmap.service.webmap.Webmap;
 
 public class WebMapServiceProvider implements WebMapService
 {
