@@ -27,11 +27,12 @@ apply plugin: 'io.github.goooler.shadow'
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
 
-version = "${project.mod_version}+${project.minecraft_version}"
+def loaderName = "neoforge"
+version = "${project.minecraft_version}-${project.mod_version}"
 def modVersion = "${project.mod_version}"
 
 group = project.group_id
-archivesBaseName = project.base_name
+archivesBaseName = "${project.base_name}-${loaderName}"
 
 configurations {
     shade
@@ -41,24 +42,26 @@ configurations.all {
     // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
+if (file("src/main/resources/META-INF/accesstransformer.cfg").exists()) {
+    minecraft.accessTransformers.file file("src/main/resources/META-INF/accesstransformer.cfg")
+}
 
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation group: "info.journeymap", name: "journeymap-api-neoforge", version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
 //    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-inline:4.1.+'
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+//    testImplementation 'junit:junit:4.12'
+//    testImplementation 'org.mockito:mockito-inline:4.1.+'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
 
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
     //external libs shade
-    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+//    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
     shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
-    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
-
+//    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
     compileOnly project(":Common")
 }
 
@@ -79,12 +82,12 @@ runs {
     }
 }
 
-tasks.build.dependsOn shadowJar
+tasks.assemble.dependsOn shadowJar
 jar.finalizedBy('shadowJar')
 
 shadowJar {
     mustRunAfter(processTestResources)
-    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}-neoforge.${archiveExtension.get()}")
+    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}.${archiveExtension.get()}")
     configurations = [project.configurations.shade]
     archiveClassifier.set("")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -130,6 +133,11 @@ def replaceProperties = [
         mcversion : project.minecraft_version,
         date      : getDate()
 ]
+
+
+tasks.named("test").configure {
+    enabled = false
+}
 
 processResources() {
     from project(":Common").sourceSets.main.resources
@@ -190,7 +198,6 @@ jar {
     }
 }
 
-
 artifacts {
     archives shadowJar
 }
@@ -203,10 +210,10 @@ def getDate() {
 
 // Automated upload to CurseForge for the win!
 if (!project.hasProperty("curseForgeApiKey")) {
-    ext.curseForgeApiKey = "notset"
+    ext.curseForgeApiKey = project.findProperty("curseforge_api_key") ?: "notset"
 }
 if (!project.hasProperty("modrinthApiKey")) {
-    ext.modrinthApiKey = "notset"
+    ext.modrinthApiKey = project.findProperty("modrinth_api_key") ?: "notset"
 }
 
 //curseforge {
@@ -227,12 +234,26 @@ if (!project.hasProperty("modrinthApiKey")) {
 //    }
 //}
 
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    apiToken = "${curseForgeApiKey}"
+    def mainFile = upload(curseforge_project_id, shadowJar)
+    mainFile.displayName = "${project.mod_id}-${version}+${loaderName}"
+    mainFile.releaseType = release_type
+    mainFile.addModLoader("NeoForge")
+    mainFile.addJavaVersion("Java 21")
+    mainFile.addGameVersion("${project.minecraft_version}")
+    mainFile.addRelation("journeymap", "requiredDependency")
+    mainFile.changelogType = "html"
+    mainFile.changelog = file("$project.buildDir/doc/changelog.html")
+}
+
 
 tasks.modrinth.dependsOn(tasks.assemble)
 
 modrinth {
     token = "${modrinthApiKey}"
-    projectId = "YaZ1fUTg"
+    projectId = modrinth_project_id
     versionNumber = "${version}-forge"
     versionName = "${archivesBaseName}-${version}-forge"
     versionType = release_type
@@ -262,12 +283,6 @@ TaskCollection.metaClass.excludingNeoTasks = { ->
 tasks.withType(JavaCompile).excludingNeoTasks().configureEach {
     source(project(":Common").sourceSets.main.allSource)
 }
-
-tasks.named('assemble').configure { dependsOn 'shadowJar' }
-
-jar.finalizedBy 'shadowJar'
-//
-//shadowJar.finalizedBy 'reobfShadowJar'
 
 publishing {
     repositories {

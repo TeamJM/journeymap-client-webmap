@@ -34,4 +34,4 @@ rootProject.name = 'journeymap_webmap'
 include("Common")
 include("Fabric")
 include("Forge")
-//include("NeoForge")
+include("NeoForge")

@@ -20,7 +20,6 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.23+', changing: true
         classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
-//        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
         classpath 'org.parchmentmc:librarian:1.+'
         classpath 'org.spongepowered:mixingradle:0.7.+'
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
@@ -36,7 +35,6 @@ plugins {
 }
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'kotlin'
-//apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'io.github.goooler.shadow'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.modrinth.minotaur"
@@ -73,8 +71,7 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly group: 'info.journeymap', name: 'journeymap-api-forge', version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
 //    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
-//    testImplementation 'junit:junit:4.12'
-//    testImplementation 'org.mockito:mockito-inline:4.1.+'
+
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
 
@@ -160,7 +157,7 @@ minecraft.runs.all {
 
 shadowJar {
     mustRunAfter(processTestResources)
-    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}-forge.${archiveExtension.get()}")
+    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}.${archiveExtension.get()}")
     configurations = [project.configurations.shade]
     archiveClassifier.set("")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -280,10 +277,10 @@ def getDate() {
 
 // Automated upload to CurseForge for the win!
 if (!project.hasProperty("curseForgeApiKey")) {
-    ext.curseForgeApiKey = "notset"
+    ext.curseForgeApiKey = project.findProperty("curseforge_api_key") ?: "notset"
 }
 if (!project.hasProperty("modrinthApiKey")) {
-    ext.modrinthApiKey = "notset"
+    ext.modrinthApiKey = project.findProperty("modrinth_api_key") ?: "notset"
 }
 
 //curseforge {
@@ -304,12 +301,25 @@ if (!project.hasProperty("modrinthApiKey")) {
 //    }
 //}
 
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    apiToken = "${curseForgeApiKey}"
+    def mainFile = upload(curseforge_project_id, shadowJar)
+    mainFile.displayName = "${project.mod_id}-${version}+${loaderName}"
+    mainFile.releaseType = release_type
+    mainFile.addModLoader("Forge")
+    mainFile.addJavaVersion("Java 21")
+    mainFile.addGameVersion("${project.minecraft_version}")
+    mainFile.addRelation("journeymap", "requiredDependency")
+    mainFile.changelogType = "html"
+    mainFile.changelog = file("$project.buildDir/doc/changelog.html")
+}
 
 tasks.modrinth.dependsOn(tasks.build)
 
 modrinth {
     token = "${modrinthApiKey}"
-    projectId = "YaZ1fUTg"
+    projectId = modrinth_project_id
     versionNumber = "${version}-forge"
     versionName = "${archivesBaseName}-${version}-forge"
     versionType = release_type

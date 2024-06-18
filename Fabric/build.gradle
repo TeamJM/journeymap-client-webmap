@@ -8,17 +8,16 @@ buildscript {
     }
 
     dependencies {
-//        classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
     }
 }
 
 plugins {
     id 'fabric-loom' version '1.6-SNAPSHOT'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'net.darkhax.curseforgegradle' version '1.+'
     id 'io.github.juuxel.loom-quiltflower' version '1.8.0'
 }
-//apply plugin: 'io.github.goooler.shadow'
+
 apply plugin: "com.modrinth.minotaur"
 apply plugin: "maven-publish"
 
@@ -94,22 +93,22 @@ dependencies {
 //    modImplementation "curse.maven:journeymap-32274:${project.jourenymap_fabric_version}"
     compileOnly project(":Common")
 
-    implementation include (group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true)
-    implementation include (group: 'io.javalin', name: 'javalin', version: '6.1.6')
+    implementation include(group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true)
+    implementation include(group: 'io.javalin', name: 'javalin', version: '6.1.6')
     //external libs shade
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-security', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-io', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-http', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-util', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
-    compileOnly include (group: 'org.eclipse.jetty', name: 'jetty-xml', version: '11.0.20')
-    compileOnly include (group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0')
-    compileOnly include (group: 'org.eclipse.jetty.toolchain', name: 'jetty-jakarta-servlet-api', version: '5.0.2')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-security', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-io', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-http', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-util', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.20')
+    compileOnly include(group: 'org.eclipse.jetty', name: 'jetty-xml', version: '11.0.20')
+    compileOnly include(group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0')
+    compileOnly include(group: 'org.eclipse.jetty.toolchain', name: 'jetty-jakarta-servlet-api', version: '5.0.2')
 
-    compileOnly include (group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23')
+    compileOnly include(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23')
 
 //    compileOnly include (group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3')
 }
@@ -143,44 +142,9 @@ sourceSets {
 }
 
 remapJar {
-//    inputFile.set shadowJar.archiveFile
-//    dependsOn shadowJar
-    archiveClassifier.set("fabric")
+    archiveClassifier.set("")
 }
 
-//shadowJar {
-////    archiveName = "${baseName}-${version}-slim.${extension}".replace("-fabric", "")
-//    archiveFileName.set("${archiveBaseName.get()}-${archiveVersion.get()}.${archiveExtension.get()}")
-//    archiveClassifier.set("shadow")
-//    configurations = [project.configurations.shade]
-//    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-//    dependencies {
-//        exclude("META-INF/maven/**")
-//        exclude("META-INF/services/org.*")
-//        exclude("META-INF/services/jakarta.*")
-//        exclude("fabric-**")
-//        exclude(dependency("org.ow2.asm:.*:.*"))
-//    }
-//
-//    minimize {
-//        // API has utility classes that must be included
-//        exclude(dependency("info.journeymap:.*:.*"))
-//        exclude(dependency("org.slf4j:.*:.*"))
-//    }
-//
-//    relocate "jakarta", "info.journeymap.shaded.jakarta"
-//    relocate "javax.servlet", "info.journeymap.shaded.org.javax.servlet"
-//    relocate "org.intellij", "info.journeymap.shaded.org.intellij"
-//    relocate "org.jetbrains", "info.journeymap.shaded.org.jetbrains"
-//    relocate "org.slf4j", "info.journeymap.shaded.org.slf4j"
-//    relocate "org.eclipse", "info.journeymap.shaded.org.eclipse"
-//
-//    relocate "kotlin", "info.journeymap.shaded.kotlin.kotlin"
-//    relocate "io.javalin", "info.journeymap.shaded.io.javalin"
-//
-//    exclude 'dummyThing'
-//    exclude 'LICENSE.txt'
-//}
 
 // This block of code expands all the gradle properties in the specified resource targets.
 // It copies them into the targets and expands all the defined properties.
@@ -234,8 +198,6 @@ task processDocs(type: Copy) {
     into 'build/doc'
 }
 
-//tasks.build.dependsOn reobfShadowJar
-
 clean.doFirst {
     // Remove the Webpack bundled assets as part of the clean task
     delete "$projectDir/src/main/resources/assets/journeymap/web/"
@@ -258,7 +220,6 @@ jar {
 
 
 artifacts {
-//    archives shadowJar
     archives remapJar
 }
 
@@ -270,47 +231,62 @@ def getDate() {
 
 // Automated upload to CurseForge for the win!
 if (!project.hasProperty("curseForgeApiKey")) {
-    ext.curseForgeApiKey = "notset"
+    ext.curseForgeApiKey = project.findProperty("curseforge_api_key") ?: "notset"
 }
 if (!project.hasProperty("modrinthApiKey")) {
-    ext.modrinthApiKey = "notset"
+    ext.modrinthApiKey = project.findProperty("modrinth_api_key") ?: "notset"
 }
-curseforge {
-    project {
-        id = '793035'
-        apiKey = "${curseForgeApiKey}"
-        changelogType = 'html'
-        releaseType = release_type
-        addGameVersion project.minecraft_version
-        addGameVersion 'Fabric'
-        addGameVersion 'Quilt'
 
-        relations {
-            requiredDependency 'journeymap'
-        }
+//curseforge {
+//    project {
+//        id = '793035'
+//        apiKey = "${curseForgeApiKey}"
+//        changelogType = 'html'
+//        releaseType = release_type
+//        addGameVersion project.minecraft_version
+//        addGameVersion 'Fabric'
+//        addGameVersion 'Quilt'
+//
+//        relations {
+//            requiredDependency 'journeymap'
+//        }
+//
+//        mainArtifact(remapJar) {
+//            displayName = "${archivesBaseName}-${version}"
+//            changelog = file('/build/doc/changelog.html')
+//        }
+//        afterEvaluate {
+//            uploadTask.dependsOn(remapJar)
+//        }
+//    }
+//}
 
-        mainArtifact(remapJar) {
-            displayName = "${archivesBaseName}-${version}"
-            changelog = file('/build/doc/changelog.html')
-        }
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
-        }
-    }
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    apiToken = "${curseForgeApiKey}"
+    def mainFile = upload(curseforge_project_id, remapJar)
+    mainFile.displayName = "${project.mod_id}-${version}+${loaderName}"
+    mainFile.releaseType = release_type
+    mainFile.addModLoader("Fabric", "Quilt")
+    mainFile.addJavaVersion("Java 21")
+    mainFile.addGameVersion("${project.minecraft_version}")
+    mainFile.addRelation("journeymap", "requiredDependency")
+    mainFile.changelogType = "html"
+    mainFile.changelog = file("$project.buildDir/doc/changelog.html")
 }
 
 tasks.modrinth.dependsOn(tasks.build)
 
 modrinth {
     token = "${modrinthApiKey}"
-    projectId = "YaZ1fUTg"
-    versionNumber = "${version}"
-    versionName = "${archivesBaseName}-${version}"
+    projectId = modrinth_project_id
+    versionNumber = "${version}+${loaderName}"
+    versionName = "${project.mod_id}-${version}+${loaderName}"
     versionType = release_type
     uploadFile = remapJar
     gameVersions = ["${project.minecraft_version}"]
     loaders = ["fabric", "quilt"]
-    changelog = file('/build/doc/changelog.html').exists() ? file('/build/doc/changelog.html').text : null
+    changelog = file("/build/doc/changelog.html").exists() ? file("/build/doc/changelog.html").text : null
     dependencies {
         required.project "journeymap"
     }
@@ -323,7 +299,7 @@ project.afterEvaluate {
     }
 }
 
-tasks.withType(PublishToMavenRepository) { task -> task.dependsOn remapJar}
+tasks.withType(PublishToMavenRepository) { task -> task.dependsOn remapJar }
 
 publishing {
     repositories {
