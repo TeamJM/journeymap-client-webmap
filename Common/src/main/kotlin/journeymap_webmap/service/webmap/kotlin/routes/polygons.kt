@@ -36,6 +36,11 @@ internal fun polygonsGet(ctx: io.javalin.http.Context)
         {
             val polygon = step.overlay as PolygonOverlay
             val points = mutableListOf<Map<String, Int>>()
+            val label = polygon.label
+            var fontColor = polygon?.textProperties?.color
+            if(fontColor == null) {
+                fontColor = RGB.BLACK_RGB
+            }
 
             polygon.outerArea.points.forEach { point ->
                 points.add(
@@ -82,7 +87,8 @@ internal fun polygonsGet(ctx: io.javalin.http.Context)
                     "texturePositionY" to polygon.shapeProperties.texturePositionY,
                     "textureScaleX" to polygon.shapeProperties.textureScaleX,
                     "textureScaleY" to polygon.shapeProperties.textureScaleY,
-
+                    "fontColor" to RGB.toHexString(fontColor),
+                    "label" to label,
                     "holes" to holes,
                     "points" to points
                 )
