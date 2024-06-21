@@ -237,11 +237,11 @@ modrinth {
     token = "${modrinthApiKey}"
     projectId = modrinth_project_id
     versionNumber = "${version}-forge"
-    versionName = "${archivesBaseName}-${version}-forge"
+    versionName ="${project.mod_id}-${version}+${loaderName}"
     versionType = release_type
     uploadFile = shadowJar
     gameVersions = ["${project.minecraft_version}"]
-    loaders = ["forge"]
+    loaders = ["neoforge"]
     changelog = file('/build/doc/changelog.html').exists() ? file('/build/doc/changelog.html').text : null
     dependencies {
         required.project "journeymap"

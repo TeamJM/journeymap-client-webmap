@@ -303,7 +303,7 @@ modrinth {
     token = "${modrinthApiKey}"
     projectId = modrinth_project_id
     versionNumber = "${version}-forge"
-    versionName = "${archivesBaseName}-${version}-forge"
+    versionName = "${project.mod_id}-${version}+${loaderName}"
     versionType = release_type
     uploadFile = shadowJar
     gameVersions = ["${project.minecraft_version}"]
