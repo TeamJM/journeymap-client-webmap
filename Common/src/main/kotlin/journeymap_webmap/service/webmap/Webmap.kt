@@ -50,6 +50,10 @@ object Webmap {
 
                     else -> {
                         val dir = File(FileHandler.getMinecraftDirectory(), Constants.WEB_DIR)
+                        if (dir.exists()) {
+                            // delete the directory to flush cached data
+                            dir.delete()
+                        }
                         if (!dir.exists()) {
                             logger.info("Attempting to copy web content to {}", File(Constants.JOURNEYMAP_DIR, "web"))
                             val created =
