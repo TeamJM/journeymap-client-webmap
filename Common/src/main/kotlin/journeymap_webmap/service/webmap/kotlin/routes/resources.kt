@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage
 import io.javalin.http.Context
 import journeymap.client.JourneymapClient
 import journeymap.client.io.FileHandler.ASSETS_JOURNEYMAP_UI
+import journeymap.client.render.draw.MobIconCache
 import journeymap.client.texture.TextureCache
 import journeymap.common.Journeymap
 import journeymap_webmap.common.kotlin.extensions.getResourceAsStream
@@ -31,7 +32,7 @@ internal fun resourcesGet(ctx: Context)
     val img: NativeImage
     val resource = ctx.queryParam("resource")
     val resourceLocation = resource?.let { ResourceLocation.parse(it) }
-
+    var close = false
     var extension = resource?.split('.')?.last()
 
     if (Minecraft.getInstance().level == null || !JourneymapClient.getInstance().isMapping) {
@@ -45,13 +46,17 @@ internal fun resourcesGet(ctx: Context)
     }
 
     if ("fake" == resourceLocation?.namespace) {
-        img = TextureCache.getTexture(resourceLocation).nativeImage
+        img = TextureCache.getTexture(resourceLocation)?.pixels!!
     } else {
         img = try {
+            MobIconCache.getWebMapIcon(resourceLocation)?.pixels!!
+        } catch (e: NullPointerException) {
+            close = true
             NativeImage.read(resourceLocation?.getResourceAsStream()!!)
         } catch (e: FileNotFoundException) {
             logger.warn("File at resource location not found: $resource")
             ctx.status(404)
+            close = true
             NativeImage.read(Webmap.javaClass.getResource("$ASSETS_JOURNEYMAP_UI/img/marker-dot-32.png").openStream())
         } catch (e: EofException) {
             logger.info("Connection closed while writing image response. Webmap probably reloaded.")
@@ -64,6 +69,7 @@ internal fun resourcesGet(ctx: Context)
         } catch (e: Exception) {
             logger.error("Exception thrown while retrieving resource at location: $resource", e)
             ctx.status(500)
+            close = true
             NativeImage.read(Webmap.javaClass.getResource("$ASSETS_JOURNEYMAP_UI/img/marker-dot-32.png").openStream())
         }
     }
@@ -71,8 +77,8 @@ internal fun resourcesGet(ctx: Context)
     ctx.contentType("image/${extension}")
     img.writeToChannel(Channels.newChannel(ctx.outputStream()))
     ctx.outputStream().flush()
-    // dont close fake since that causes problems...
-    if (resource?.split(":")?.first()?.contains("fake") != true) {
+    // close images read from disk to prevent memory leaks
+    if (close) {
         img.close()
     }
 }
