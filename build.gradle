@@ -87,8 +87,8 @@ subprojects {
         implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
         implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
         implementation group: 'io.javalin', name: 'javalin', version: '6.1.6'
-//        testImplementation "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
-        testImplementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
+        testImplementation "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
+//        testImplementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
 
     }
 
