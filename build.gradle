@@ -78,8 +78,8 @@ subprojects {
 
     dependencies {
         implementation group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
-//        compileOnly "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
-        implementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
+        compileOnly "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
+//        implementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
         // for annotations
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
