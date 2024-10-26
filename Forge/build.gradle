@@ -1,22 +1,4 @@
 buildscript {
-    repositories {
-        mavenCentral()
-
-        maven {
-            name = "forge"
-            url = "https://maven.minecraftforge.net"
-        }
-        maven {
-            url = 'https://maven.parchmentmc.org'
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            url = 'https://repo.spongepowered.org/maven'
-        }
-    }
-
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.23+', changing: true
         classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
@@ -78,7 +60,7 @@ dependencies {
     //external libs shade
 //    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
-    shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
+    shade group: 'io.javalin', name: 'javalin', version: project.javalin_version
 //    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
 
     compileOnly project(":Common")
@@ -206,6 +188,7 @@ def replaceProperties = [
 
 processResources() {
     from project(":Common").sourceSets.main.resources
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     //    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     // this will ensure that this task is redone when the versions change.
     inputs.properties replaceProperties

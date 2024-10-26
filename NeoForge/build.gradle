@@ -1,12 +1,4 @@
 buildscript {
-    repositories {
-        mavenCentral()
-
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-
     dependencies {
         classpath("io.github.goooler.shadow:shadow-gradle-plugin:8.1.7")
         classpath group: 'com.modrinth.minotaur', name: 'Minotaur', version: '2.+'
@@ -15,17 +7,17 @@ buildscript {
 }
 
 plugins {
+    id "maven-publish"
     id "java-library"
     id "idea"
-    id "net.neoforged.gradle.userdev" version '[7.0.145]'
+    id 'net.neoforged.moddev'
     id 'net.darkhax.curseforgegradle' version '1.+'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'kotlin'
 apply plugin: 'io.github.goooler.shadow'
-apply plugin: "com.modrinth.minotaur"
-apply plugin: "maven-publish"
 
 def loaderName = "neoforge"
 version = "${project.minecraft_version}-${project.mod_version}"
@@ -42,12 +34,8 @@ configurations.all {
     // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
-if (file("src/main/resources/META-INF/accesstransformer.cfg").exists()) {
-    minecraft.accessTransformers.file file("src/main/resources/META-INF/accesstransformer.cfg")
-}
 
 dependencies {
-    implementation "net.neoforged:neoforge:${neoforge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation group: "info.journeymap", name: "journeymap-api-neoforge", version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
 //    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
@@ -60,25 +48,42 @@ dependencies {
     //external libs shade
 //    shade group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     shade group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
-    shade group: 'io.javalin', name: 'javalin', version: '6.0.0'
+    shade group: 'io.javalin', name: 'javalin', version: project.javalin_version
 //    shade group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.3'
     compileOnly project(":Common")
 }
 
-runs {
-    configureEach {
-        systemProperty "mixin.debug.export", "true"
-        systemProperty "forge.logging.console.level", "info"
-        systemProperty "journeymap.map_testing", "true"
-
-        modSource project.sourceSets.main
+neoForge {
+    version = neoforge_version
+    // Automatically enable neoforge AccessTransformers if the file exists
+    def at = project(':Common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.add(at.absolutePath)
     }
-    client {
-        workingDirectory project.file("run/client")
+    addModdingDependenciesTo(sourceSets["test"])
+//    parchment {
+//        minecraftVersion = mappings_mc_version
+//        mappingsVersion = mappings_date
+//    }
+    runs {
+        configureEach {
+//            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
+            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
+            jvmArgument("-Dmixin.debug.export=true")
+        }
+        client {
+            client()
+            gameDirectory = project.file('run/client')
+        }
+        server {
+            server()
+            gameDirectory = project.file("run/server")
+        }
     }
-    server {
-        programArgument "--nogui"
-        workingDirectory project.file("run/server")
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
     }
 }
 
@@ -237,7 +242,7 @@ modrinth {
     token = "${modrinthApiKey}"
     projectId = modrinth_project_id
     versionNumber = "${version}-forge"
-    versionName ="${project.mod_id}-${version}+${loaderName}"
+    versionName = "${project.mod_id}-${version}+${loaderName}"
     versionType = release_type
     uploadFile = shadowJar
     gameVersions = ["${project.minecraft_version}", "1.21.1"]

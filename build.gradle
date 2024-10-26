@@ -1,19 +1,13 @@
 buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-
-    }
-
     dependencies {
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20'
     }
 }
+
 plugins {
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
+    id 'net.neoforged.moddev' version '0.1.112' apply false
 }
+
 configurations.all {
     // Check for snapshots more frequently than Gradle's default of 1 day. 0 = every build.
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -84,12 +78,19 @@ subprojects {
         implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
         // external libs
+//        implementation 'org.slf4j:slf4j-api:2.0.16'
         implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
         implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
-        implementation group: 'io.javalin', name: 'javalin', version: '6.1.6'
-//        testImplementation "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
-        testImplementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
+        implementation group: 'io.javalin', name: 'javalin', version: project.javalin_version
+        testImplementation "curse.maven:journeymap-32274:${project.journeymap_forge_version}"
+//        testImplementation "ignored:journeymap-forge:1.21.1-6.0.0-beta.27"
 
+    }
+
+    plugins.withType(JavaPlugin) {
+        dependencies {
+            implementation enforcedPlatform('org.slf4j:slf4j-api:2.0.9')
+        }
     }
 
 
