@@ -70,7 +70,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 //    compileOnly group: 'info.journeymap', name: 'journeymap-api-forge', version: "${project.journeymap_api_version}-${project.minecraft_version}-SNAPSHOT", changing: true
-    implementation fg.deobf("curse.maven:journeymap-32274:${project.jourenymap_forge_version}")
+//    implementation fg.deobf("curse.maven:journeymap-32274:${project.journeymap_forge_version}")
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.23'
     shade group: 'info.journeymap', name: 'webmap-client', version: project.journeymap_webmap_version, changing: true
